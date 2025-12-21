@@ -1,10 +1,7 @@
 
 from data.TSP_LK_data import N, dist_matrix, tour_cost
-# ====================================
-# FULL LIN-KERNIGHAN (Variable k-opt)
-# ====================================
+
 def full_lin_kernighan():
-    # 1. Khởi tạo bằng Nearest Neighbor để có tour ban đầu tốt
     def get_initial_tour():
         unvisited = list(range(1, N))
         current = 0
@@ -20,7 +17,6 @@ def full_lin_kernighan():
     current_tour = get_initial_tour()
     best_overall_cost = tour_cost(current_tour)
 
-    # 2. Xây dựng Candidate Set (Lấy 10 hàng xóm gần nhất để tăng tốc)
     candidate_set = []
     for i in range(N):
         line = sorted(range(N), key=lambda x: dist_matrix[i][x])
@@ -35,7 +31,6 @@ def full_lin_kernighan():
         return tour[idx - 1] if idx > 0 else tour[N-1]
 
     def flip_tour(tour, t3, t4, t2, t1):
-        # Hàm thực hiện đổi cạnh (2-opt swap) để tạo tour mới hợp lệ
         new_tour = tour[:]
         i, j = new_tour.index(t2), new_tour.index(t3)
         if i > j: i, j = j, i
@@ -46,11 +41,9 @@ def full_lin_kernighan():
     while improved:
         improved = False
         for t1 in range(N):
-            # Chọn t2 là nút liền kề t1 trong tour
             for t2 in [get_node_before(t1, current_tour), get_node_after(t1, current_tour)]:
                 x1_weight = dist_matrix[t1][t2]
                 
-                # Tìm t3 trong Candidate Set
                 for t3 in candidate_set[t2]:
                     if t3 == t1 or t3 == get_node_before(t2, current_tour) or t3 == get_node_after(t2, current_tour):
                         continue
@@ -58,8 +51,7 @@ def full_lin_kernighan():
                     y1_weight = dist_matrix[t2][t3]
                     gain1 = x1_weight - y1_weight
                     
-                    if gain1 > 0: # Điều kiện đủ để bắt đầu xét LK
-                        # t4 là nút liền kề t3 sao cho việc nối t4-t1 đóng lại tour
+                    if gain1 > 0:
                         for t4 in [get_node_before(t3, current_tour), get_node_after(t3, current_tour)]:
                             if t4 == t1 or t4 == t2: continue
                             
